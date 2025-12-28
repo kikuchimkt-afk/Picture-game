@@ -2,8 +2,8 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English Gacha World</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>English Gacha World DX</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -18,9 +18,6 @@
         .animate-spin-slow {
             animation: spin-slow 10s linear infinite;
         }
-        .balloon-float {
-            animation: float 3s infinite ease-in-out alternate;
-        }
         /* Gacha animation classes */
         .gacha-shake {
             animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
@@ -31,82 +28,162 @@
             30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
             40%, 60% { transform: translate3d(4px, 0, 0); }
         }
+        /* Custom Scrollbar for collection */
+        .collection-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .collection-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        .collection-scroll::-webkit-scrollbar-thumb {
+            background: #c7c7c7; 
+            border-radius: 4px;
+        }
+        .collection-scroll::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8; 
+        }
     </style>
 </head>
-<body class="bg-indigo-50 min-h-screen font-sans select-none touch-manipulation">
+<body class="bg-indigo-50 min-h-screen font-sans select-none touch-manipulation overflow-hidden">
 
-    <div id="app" class="max-w-md mx-auto min-h-screen bg-indigo-50 relative shadow-2xl overflow-hidden">
+    <div id="app" class="max-w-md mx-auto h-screen bg-indigo-50 relative shadow-2xl overflow-hidden flex flex-col">
         <!-- Content will be rendered here by JavaScript -->
     </div>
 
 <script>
-    // --- データ定義 ---
+    // --- データ定義 (全100単語) ---
+    // Rarity 1: Common (50%)
+    // Rarity 2: Rare (30%)
+    // Rarity 3: Super Rare (15%)
+    // Rarity 4: Ultra Rare (5%)
     const VOCABULARY = [
-        // Common (★1)
+        // --- Common (★1) Everyday Items ---
         { id: 'apple', word: 'Apple', jp: 'りんご', icon: '🍎', rarity: 1, bg: 'bg-red-50' },
         { id: 'banana', word: 'Banana', jp: 'バナナ', icon: '🍌', rarity: 1, bg: 'bg-yellow-50' },
+        { id: 'orange', word: 'Orange', jp: 'みかん', icon: '🍊', rarity: 1, bg: 'bg-orange-50' },
         { id: 'cat', word: 'Cat', jp: 'ねこ', icon: '🐱', rarity: 1, bg: 'bg-orange-50' },
         { id: 'dog', word: 'Dog', jp: 'いぬ', icon: '🐶', rarity: 1, bg: 'bg-amber-50' },
-        { id: 'car', word: 'Car', jp: 'くるま', icon: '🚗', rarity: 1, bg: 'bg-blue-50' },
-        { id: 'bus', word: 'Bus', jp: 'バス', icon: '🚌', rarity: 1, bg: 'bg-blue-100' },
-        { id: 'sun', word: 'Sun', jp: 'たいよう', icon: '☀️', rarity: 1, bg: 'bg-orange-100' },
-        { id: 'flower', word: 'Flower', jp: 'おはな', icon: '🌸', rarity: 1, bg: 'bg-pink-50' },
-        { id: 'ball', word: 'Ball', jp: 'ボール', icon: '⚽', rarity: 1, bg: 'bg-slate-50' },
-        { id: 'book', word: 'Book', jp: 'ほん', icon: '📚', rarity: 1, bg: 'bg-indigo-50' },
-        { id: 'fish', word: 'Fish', jp: 'さかな', icon: '🐟', rarity: 1, bg: 'bg-cyan-50' },
-        { id: 'egg', word: 'Egg', jp: 'たまご', icon: '🥚', rarity: 1, bg: 'bg-stone-50' },
+        { id: 'pig', word: 'Pig', jp: 'ぶた', icon: '🐷', rarity: 1, bg: 'bg-pink-50' },
+        { id: 'cow', word: 'Cow', jp: 'うし', icon: '🐮', rarity: 1, bg: 'bg-stone-50' },
+        { id: 'mouse', word: 'Mouse', jp: 'ねずみ', icon: '🐭', rarity: 1, bg: 'bg-stone-100' },
+        { id: 'egg', word: 'Egg', jp: 'たまご', icon: '🥚', rarity: 1, bg: 'bg-yellow-50' },
         { id: 'milk', word: 'Milk', jp: 'ぎゅうにゅう', icon: '🥛', rarity: 1, bg: 'bg-blue-50' },
         { id: 'bread', word: 'Bread', jp: 'パン', icon: '🍞', rarity: 1, bg: 'bg-orange-50' },
-        { id: 'shirt', word: 'Shirt', jp: 'シャツ', icon: '👕', rarity: 1, bg: 'bg-sky-50' },
+        { id: 'rice', word: 'Rice', jp: 'ごはん', icon: '🍚', rarity: 1, bg: 'bg-white' },
+        { id: 'ball', word: 'Ball', jp: 'ボール', icon: '⚽', rarity: 1, bg: 'bg-stone-50' },
+        { id: 'book', word: 'Book', jp: 'ほん', icon: '📚', rarity: 1, bg: 'bg-blue-50' },
+        { id: 'pen', word: 'Pen', jp: 'ペン', icon: '🖊️', rarity: 1, bg: 'bg-slate-50' },
+        { id: 'pencil', word: 'Pencil', jp: 'えんぴつ', icon: '✏️', rarity: 1, bg: 'bg-yellow-50' },
+        { id: 'shirt', word: 'Shirt', jp: 'シャツ', icon: '👕', rarity: 1, bg: 'bg-cyan-50' },
+        { id: 'shoes', word: 'Shoes', jp: 'くつ', icon: '👟', rarity: 1, bg: 'bg-red-50' },
+        { id: 'socks', word: 'Socks', jp: 'くつした', icon: '🧦', rarity: 1, bg: 'bg-green-50' },
+        { id: 'hat', word: 'Hat', jp: 'ぼうし', icon: '🧢', rarity: 1, bg: 'bg-blue-100' },
+        { id: 'car', word: 'Car', jp: 'くるま', icon: '🚗', rarity: 1, bg: 'bg-red-100' },
+        { id: 'bus', word: 'Bus', jp: 'バス', icon: '🚌', rarity: 1, bg: 'bg-yellow-100' },
+        { id: 'taxi', word: 'Taxi', jp: 'タクシー', icon: '🚕', rarity: 1, bg: 'bg-yellow-50' },
+        { id: 'flower', word: 'Flower', jp: 'おはな', icon: '🌷', rarity: 1, bg: 'bg-pink-50' },
+        { id: 'tree', word: 'Tree', jp: 'き', icon: '🌳', rarity: 1, bg: 'bg-green-100' },
+        { id: 'sun', word: 'Sun', jp: 'たいよう', icon: '☀️', rarity: 1, bg: 'bg-orange-100' },
+        { id: 'cloud', word: 'Cloud', jp: 'くも', icon: '☁️', rarity: 1, bg: 'bg-gray-100' },
+        { id: 'umbrella', word: 'Umbrella', jp: 'かさ', icon: '☂️', rarity: 1, bg: 'bg-purple-50' },
+        { id: 'fish', word: 'Fish', jp: 'さかな', icon: '🐟', rarity: 1, bg: 'bg-blue-50' },
+        { id: 'bug', word: 'Bug', jp: 'むし', icon: '🐛', rarity: 1, bg: 'bg-green-50' },
+        { id: 'ant', word: 'Ant', jp: 'あり', icon: '🐜', rarity: 1, bg: 'bg-stone-200' },
+        { id: 'eye', word: 'Eye', jp: 'め', icon: '👁️', rarity: 1, bg: 'bg-stone-50' },
+        { id: 'ear', word: 'Ear', jp: 'みみ', icon: '👂', rarity: 1, bg: 'bg-orange-50' },
+        { id: 'mouth', word: 'Mouth', jp: 'くち', icon: '👄', rarity: 1, bg: 'bg-pink-50' },
+        { id: 'hand', word: 'Hand', jp: 'て', icon: '✋', rarity: 1, bg: 'bg-orange-50' },
+        { id: 'door', word: 'Door', jp: 'ドア', icon: '🚪', rarity: 1, bg: 'bg-yellow-100' },
+        { id: 'bed', word: 'Bed', jp: 'ベッド', icon: '🛏️', rarity: 1, bg: 'bg-blue-50' },
+        { id: 'bath', word: 'Bath', jp: 'おふろ', icon: '🛁', rarity: 1, bg: 'bg-cyan-50' },
+        { id: 'clock', word: 'Clock', jp: 'とけい', icon: '⏰', rarity: 1, bg: 'bg-red-50' },
+        { id: 'phone', word: 'Phone', jp: 'でんわ', icon: '📱', rarity: 1, bg: 'bg-slate-100' },
 
-        // Rare (★2)
+        // --- Rare (★2) Fun Things ---
         { id: 'grape', word: 'Grape', jp: 'ぶどう', icon: '🍇', rarity: 2, bg: 'bg-purple-100' },
+        { id: 'strawberry', word: 'Strawberry', jp: 'いちご', icon: '🍓', rarity: 2, bg: 'bg-red-100' },
+        { id: 'melon', word: 'Melon', jp: 'メロン', icon: '🍈', rarity: 2, bg: 'bg-green-100' },
+        { id: 'peach', word: 'Peach', jp: 'もも', icon: '🍑', rarity: 2, bg: 'bg-pink-100' },
+        { id: 'cherry', word: 'Cherry', jp: 'さくらんぼ', icon: '🍒', rarity: 2, bg: 'bg-rose-100' },
         { id: 'lion', word: 'Lion', jp: 'ライオン', icon: '🦁', rarity: 2, bg: 'bg-yellow-100' },
-        { id: 'panda', word: 'Panda', jp: 'パンダ', icon: '🐼', rarity: 2, bg: 'bg-stone-100' },
-        { id: 'train', word: 'Train', jp: 'でんしゃ', icon: '🚃', rarity: 2, bg: 'bg-emerald-100' },
-        { id: 'plane', word: 'Plane', jp: 'ひこうき', icon: '✈️', rarity: 2, bg: 'bg-sky-100' },
-        { id: 'cake', word: 'Cake', jp: 'ケーキ', icon: '🍰', rarity: 2, bg: 'bg-rose-100' },
-        { id: 'icecream', word: 'Ice Cream', jp: 'アイス', icon: '🍦', rarity: 2, bg: 'bg-pink-100' },
-        { id: 'robot', word: 'Robot', jp: 'ロボット', icon: '🤖', rarity: 2, bg: 'bg-gray-200' },
+        { id: 'tiger', word: 'Tiger', jp: 'とら', icon: '🐯', rarity: 2, bg: 'bg-orange-200' },
         { id: 'bear', word: 'Bear', jp: 'くま', icon: '🐻', rarity: 2, bg: 'bg-amber-200' },
+        { id: 'panda', word: 'Panda', jp: 'パンダ', icon: '🐼', rarity: 2, bg: 'bg-stone-100' },
+        { id: 'koala', word: 'Koala', jp: 'コアラ', icon: '🐨', rarity: 2, bg: 'bg-slate-200' },
+        { id: 'rabbit', word: 'Rabbit', jp: 'うさぎ', icon: '🐰', rarity: 2, bg: 'bg-pink-50' },
         { id: 'frog', word: 'Frog', jp: 'かえる', icon: '🐸', rarity: 2, bg: 'bg-green-100' },
-        { id: 'star', word: 'Star', jp: 'ほし', icon: '⭐', rarity: 2, bg: 'bg-yellow-100' },
+        { id: 'turtle', word: 'Turtle', jp: 'かめ', icon: '🐢', rarity: 2, bg: 'bg-emerald-100' },
+        { id: 'penguin', word: 'Penguin', jp: 'ペンギン', icon: '🐧', rarity: 2, bg: 'bg-blue-100' },
+        { id: 'octopus', word: 'Octopus', jp: 'たこ', icon: '🐙', rarity: 2, bg: 'bg-red-100' },
+        { id: 'burger', word: 'Burger', jp: 'ハンバーガー', icon: '🍔', rarity: 2, bg: 'bg-orange-100' },
+        { id: 'fries', word: 'Fries', jp: 'ポテト', icon: '🍟', rarity: 2, bg: 'bg-yellow-100' },
+        { id: 'pizza', word: 'Pizza', jp: 'ピザ', icon: '🍕', rarity: 2, bg: 'bg-orange-50' },
+        { id: 'donut', word: 'Donut', jp: 'ドーナツ', icon: '🍩', rarity: 2, bg: 'bg-pink-100' },
+        { id: 'cookie', word: 'Cookie', jp: 'クッキー', icon: '🍪', rarity: 2, bg: 'bg-amber-100' },
+        { id: 'icecream', word: 'Ice Cream', jp: 'アイス', icon: '🍦', rarity: 2, bg: 'bg-sky-50' },
+        { id: 'cake', word: 'Cake', jp: 'ケーキ', icon: '🍰', rarity: 2, bg: 'bg-rose-50' },
+        { id: 'chocolate', word: 'Chocolate', jp: 'チョコ', icon: '🍫', rarity: 2, bg: 'bg-stone-300' },
+        { id: 'candy', word: 'Candy', jp: 'キャンディ', icon: '🍬', rarity: 2, bg: 'bg-purple-50' },
+        { id: 'train', word: 'Train', jp: 'でんしゃ', icon: '🚃', rarity: 2, bg: 'bg-green-100' },
+        { id: 'bike', word: 'Bike', jp: 'じてんしゃ', icon: '🚲', rarity: 2, bg: 'bg-blue-50' },
+        { id: 'boat', word: 'Boat', jp: 'ボート', icon: '🚤', rarity: 2, bg: 'bg-cyan-100' },
+        { id: 'truck', word: 'Truck', jp: 'トラック', icon: '🚚', rarity: 2, bg: 'bg-slate-200' },
+        { id: 'police', word: 'Police Car', jp: 'パトカー', icon: '🚓', rarity: 2, bg: 'bg-stone-100' },
+        { id: 'fire', word: 'Fire Engine', jp: 'しょうぼうしゃ', icon: '🚒', rarity: 2, bg: 'bg-red-200' },
+        { id: 'ambulance', word: 'Ambulance', jp: 'きゅうきゅうしゃ', icon: '🚑', rarity: 2, bg: 'bg-slate-50' },
         { id: 'moon', word: 'Moon', jp: 'つき', icon: '🌙', rarity: 2, bg: 'bg-indigo-100' },
-        { id: 'music', word: 'Music', jp: 'おんがく', icon: '🎵', rarity: 2, bg: 'bg-fuchsia-100' },
+        { id: 'star', word: 'Star', jp: 'ほし', icon: '⭐', rarity: 2, bg: 'bg-yellow-100' },
         { id: 'camera', word: 'Camera', jp: 'カメラ', icon: '📷', rarity: 2, bg: 'bg-stone-200' },
-        { id: 'burger', word: 'Burger', jp: 'ハンバーガー', icon: '🍔', rarity: 2, bg: 'bg-orange-200' },
+        { id: 'computer', word: 'Computer', jp: 'パソコン', icon: '💻', rarity: 2, bg: 'bg-slate-200' },
+        { id: 'robot', word: 'Robot', jp: 'ロボット', icon: '🤖', rarity: 2, bg: 'bg-gray-200' },
+        { id: 'music', word: 'Music', jp: 'おんがく', icon: '🎵', rarity: 2, bg: 'bg-pink-100' },
+        { id: 'balloon', word: 'Balloon', jp: 'ふうせん', icon: '🎈', rarity: 2, bg: 'bg-red-50' },
 
-        // Super Rare (★3)
-        { id: 'unicorn', word: 'Unicorn', jp: 'ユニコーン', icon: '🦄', rarity: 3, bg: 'bg-purple-200' },
-        { id: 'dragon', word: 'Dragon', jp: 'ドラゴン', icon: '🐉', rarity: 3, bg: 'bg-emerald-200' },
+        // --- Super Rare (★3) Cool Things ---
+        { id: 'plane', word: 'Plane', jp: 'ひこうき', icon: '✈️', rarity: 3, bg: 'bg-sky-200' },
+        { id: 'helicopter', word: 'Helicopter', jp: 'ヘリコプター', icon: '🚁', rarity: 3, bg: 'bg-stone-300' },
         { id: 'rocket', word: 'Rocket', jp: 'ロケット', icon: '🚀', rarity: 3, bg: 'bg-indigo-200' },
-        { id: 'crown', word: 'Crown', jp: 'おうかん', icon: '👑', rarity: 3, bg: 'bg-yellow-200' },
-        { id: 'diamond', word: 'Diamond', jp: 'ほうせき', icon: '💎', rarity: 3, bg: 'bg-cyan-200' },
-        { id: 'ghost', word: 'Ghost', jp: 'おばけ', icon: '👻', rarity: 3, bg: 'bg-slate-300' },
-        { id: 'alien', word: 'Alien', jp: 'うちゅうじん', icon: '👽', rarity: 3, bg: 'bg-green-300' },
-        { id: 'santa', word: 'Santa', jp: 'サンタ', icon: '🎅', rarity: 3, bg: 'bg-red-200' },
-        { id: 'present', word: 'Gift', jp: 'プレゼント', icon: '🎁', rarity: 3, bg: 'bg-rose-200' },
-        { id: 'rainbow', word: 'Rainbow', jp: 'にじ', icon: '🌈', rarity: 3, bg: 'bg-sky-200' },
+        { id: 'ufo', word: 'UFO', jp: 'UFO', icon: '🛸', rarity: 3, bg: 'bg-purple-200' },
+        { id: 'dinosaur', word: 'Dinosaur', jp: 'きょうりゅう', icon: '🦖', rarity: 3, bg: 'bg-green-200' },
+        { id: 'whale', word: 'Whale', jp: 'くじら', icon: '🐳', rarity: 3, bg: 'bg-blue-200' },
+        { id: 'shark', word: 'Shark', jp: 'さめ', icon: '🦈', rarity: 3, bg: 'bg-slate-300' },
+        { id: 'rainbow', word: 'Rainbow', jp: 'にじ', icon: '🌈', rarity: 3, bg: 'bg-sky-100' },
+        { id: 'snowman', word: 'Snowman', jp: 'ゆきだるま', icon: '⛄', rarity: 3, bg: 'bg-slate-100' },
+        { id: 'ghost', word: 'Ghost', jp: 'おばけ', icon: '👻', rarity: 3, bg: 'bg-gray-300' },
+        { id: 'present', word: 'Gift', jp: 'プレゼント', icon: '🎁', rarity: 3, bg: 'bg-red-200' },
+        { id: 'ring', word: 'Ring', jp: 'ゆびわ', icon: '💍', rarity: 3, bg: 'bg-cyan-100' },
+        { id: 'gem', word: 'Gem', jp: 'ほうせき', icon: '💎', rarity: 3, bg: 'bg-cyan-200' },
+        { id: 'trophy', word: 'Trophy', jp: 'トロフィー', icon: '🏆', rarity: 3, bg: 'bg-yellow-200' },
+        { id: 'medal', word: 'Medal', jp: 'メダル', icon: '🥇', rarity: 3, bg: 'bg-yellow-300' },
+        
+        // --- Ultra Rare (★4) Legendary ---
+        { id: 'dragon', word: 'Dragon', jp: 'ドラゴン', icon: '🐉', rarity: 4, bg: 'bg-emerald-300' },
+        { id: 'unicorn', word: 'Unicorn', jp: 'ユニコーン', icon: '🦄', rarity: 4, bg: 'bg-purple-300' },
+        { id: 'alien', word: 'Alien', jp: 'うちゅうじん', icon: '👽', rarity: 4, bg: 'bg-green-300' },
+        { id: 'crown', word: 'Crown', jp: 'おうかん', icon: '👑', rarity: 4, bg: 'bg-yellow-400' },
+        { id: 'castle', word: 'Castle', jp: 'おしろ', icon: '🏰', rarity: 4, bg: 'bg-stone-300' },
+        { id: 'santa', word: 'Santa', jp: 'サンタ', icon: '🎅', rarity: 4, bg: 'bg-red-300' },
+        { id: 'genie', word: 'Genie', jp: 'まじん', icon: '🧞', rarity: 4, bg: 'bg-indigo-300' },
     ];
 
     const GACHA_COST = 100;
-    const REWARD_PER_GAME = 10;
-    const PERFECT_BONUS = 20;
+    const REWARD_PER_GAME = 20; // コイン獲得量アップ
+    const PERFECT_BONUS = 50;   // ボーナスアップ
 
     // --- State Management ---
     let state = {
-        coins: parseInt(localStorage.getItem('kids_eng_coins')) || 0,
-        collection: JSON.parse(localStorage.getItem('kids_eng_collection')) || [],
-        screen: 'menu', // menu, game, gacha, result, collection
+        coins: parseInt(localStorage.getItem('kids_eng_coins_dx')) || 100, // 最初から1回引けるように
+        collection: JSON.parse(localStorage.getItem('kids_eng_collection_dx')) || [],
+        screen: 'menu', 
         gameData: null,
-        gachaState: 'idle', // idle, spinning, open
+        gachaState: 'idle',
         gachaResult: null
     };
 
     // --- Helpers ---
     function saveState() {
-        localStorage.setItem('kids_eng_coins', state.coins);
-        localStorage.setItem('kids_eng_collection', JSON.stringify(state.collection));
+        localStorage.setItem('kids_eng_coins_dx', state.coins);
+        localStorage.setItem('kids_eng_collection_dx', JSON.stringify(state.collection));
         render();
     }
 
@@ -115,7 +192,7 @@
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(text);
         u.lang = 'en-US';
-        u.rate = 1.0;
+        u.rate = 0.9; // 少しゆっくり
         window.speechSynthesis.speak(u);
     }
 
@@ -153,6 +230,16 @@
             gain.gain.linearRampToValueAtTime(0, now + 0.5);
             osc.start();
             osc.stop(now + 0.5);
+        } else if (type === 'fanfare') {
+             // 簡易ファンファーレ
+             osc.type = 'triangle';
+             osc.frequency.setValueAtTime(523, now);
+             osc.frequency.setValueAtTime(659, now + 0.1);
+             osc.frequency.setValueAtTime(784, now + 0.2);
+             gain.gain.setValueAtTime(0.2, now);
+             gain.gain.linearRampToValueAtTime(0, now + 1.0);
+             osc.start();
+             osc.stop(now + 1.0);
         }
     }
 
@@ -190,7 +277,7 @@
         const clickedItem = currentQ.options.find(o => o.id === itemId);
 
         state.gameData.answered = true;
-        render(); // Update visual state
+        render(); 
 
         if (isCorrect) {
             playSfx('pop');
@@ -208,16 +295,16 @@
                 speak(state.gameData.questions[state.gameData.currentIdx].target.word);
             } else {
                 // End Game
-                const finalScore = isCorrect ? state.gameData.score : state.gameData.score; // Already incremented
+                const finalScore = isCorrect ? state.gameData.score : state.gameData.score;
                 const reward = (finalScore * REWARD_PER_GAME) + (finalScore === 5 ? PERFECT_BONUS : 0);
                 
                 state.coins += reward;
-                if (finalScore > 0) playSfx('coin');
+                if (finalScore >= 3) playSfx('fanfare');
                 
                 state.gameData.finalReward = reward;
                 state.gameData.finalScore = finalScore;
                 state.screen = 'result';
-                saveState(); // Renders automatically
+                saveState();
             }
         }, 1500);
     }
@@ -232,19 +319,25 @@
         saveState();
 
         setTimeout(() => {
+            // Rarity Logic
             const rand = Math.random();
-            let pool = [];
-            if (rand < 0.6) pool = VOCABULARY.filter(v => v.rarity === 1);
-            else if (rand < 0.9) pool = VOCABULARY.filter(v => v.rarity === 2);
-            else pool = VOCABULARY.filter(v => v.rarity === 3);
+            let rarity = 1;
             
+            if (rand < 0.50) rarity = 1; // 50% Common
+            else if (rand < 0.80) rarity = 2; // 30% Rare
+            else if (rand < 0.95) rarity = 3; // 15% Super Rare
+            else rarity = 4; // 5% Ultra Rare
+
+            const pool = VOCABULARY.filter(v => v.rarity === rarity);
             const result = pool[Math.floor(Math.random() * pool.length)];
+            
             state.gachaResult = result;
             state.gachaState = 'open';
             
             if (!state.collection.includes(result.id)) {
                 state.collection.push(result.id);
             }
+            if (rarity >= 3) playSfx('fanfare');
             saveState();
         }, 2000);
     }
@@ -257,7 +350,7 @@
 
     function resetData() {
         if(confirm('Are you sure you want to reset all data? (Coins and Collection will be lost)')) {
-            state.coins = 0;
+            state.coins = 100;
             state.collection = [];
             state.screen = 'menu';
             saveState();
@@ -268,7 +361,7 @@
     const app = document.getElementById('app');
 
     function render() {
-        app.innerHTML = ''; // Clear
+        app.innerHTML = ''; 
 
         if (state.screen === 'menu') renderMenu();
         else if (state.screen === 'game') renderGame();
@@ -276,16 +369,16 @@
         else if (state.screen === 'gacha') renderGacha();
         else if (state.screen === 'collection') renderCollection();
 
-        lucide.createIcons(); // Initialize icons
+        lucide.createIcons(); 
     }
 
     function renderMenu() {
         app.innerHTML = `
-            <div class="flex flex-col h-full">
+            <div class="flex flex-col h-full bg-white sm:bg-indigo-50">
                 <!-- Header -->
-                <div class="bg-white p-4 shadow-sm flex justify-between items-center z-10">
+                <div class="bg-white p-4 shadow-sm flex justify-between items-center z-10 sticky top-0">
                     <h1 class="text-xl font-bold text-indigo-600 flex items-center gap-2">
-                        <i data-lucide="gift" class="text-pink-500"></i> English Gacha
+                        <i data-lucide="gift" class="text-pink-500"></i> Gacha DX
                     </h1>
                     <div class="bg-yellow-100 px-4 py-1 rounded-full flex items-center gap-2 text-yellow-700 font-bold border border-yellow-300">
                         <i data-lucide="coins" class="fill-yellow-400 text-yellow-600 w-5 h-5"></i>
@@ -294,11 +387,11 @@
                 </div>
 
                 <!-- Main Content -->
-                <div class="flex-1 flex flex-col items-center justify-center p-6 gap-6">
+                <div class="flex-1 flex flex-col items-center justify-center p-6 gap-6 overflow-y-auto">
                     <div class="text-center mb-4">
-                        <p class="text-gray-500 mb-2 font-bold">Collect them all!</p>
-                        <span class="text-xs bg-gray-200 px-2 py-1 rounded text-gray-600">
-                            Collection: ${state.collection.length} / ${VOCABULARY.length}
+                        <p class="text-gray-500 mb-2 font-bold">Collect all 100 words!</p>
+                        <span class="text-xs bg-gray-200 px-2 py-1 rounded text-gray-600 font-mono">
+                            ${state.collection.length} / ${VOCABULARY.length}
                         </span>
                     </div>
 
@@ -322,7 +415,7 @@
                             </div>
                             <div class="text-left">
                                 <div class="text-2xl font-bold">Gacha Shop</div>
-                                <div class="text-pink-100 text-sm">${GACHA_COST} coins / play</div>
+                                <div class="text-pink-100 text-sm">${GACHA_COST} coins</div>
                             </div>
                         </div>
                         <div class="text-4xl group-hover:rotate-12 transition-transform">💊</div>
@@ -335,14 +428,14 @@
                             </div>
                             <div class="text-left">
                                 <div class="text-2xl font-bold">Collection</div>
-                                <div class="text-gray-400 text-sm">Check your items</div>
+                                <div class="text-gray-400 text-sm">Check items</div>
                             </div>
                         </div>
                         <div class="text-4xl">📖</div>
                     </button>
                 </div>
 
-                <div class="p-4 flex justify-center">
+                <div class="p-4 flex justify-center bg-white sm:bg-transparent">
                     <button onclick="resetData()" class="text-gray-300 hover:text-red-400 flex gap-1 text-xs items-center">
                         <i data-lucide="settings" class="w-3 h-3"></i> Reset Data
                     </button>
@@ -358,13 +451,15 @@
             const isTarget = opt.id === q.target.id;
             const isVisible = !state.gameData.answered || (state.gameData.answered && isTarget);
             const styleOpacity = state.gameData.answered && !isTarget ? 'opacity: 0;' : 'opacity: 1;';
+            // Randomize position slightly for visual variety
+            const leftPos = 10 + (idx * 30);
             const styleAnim = state.gameData.answered ? '' : `animation: float 3s infinite ease-in-out ${idx * 0.5}s alternate;`;
             
             return `
                 <button
                     onclick="handleBalloonClick('${opt.id}')"
-                    class="absolute transition-all duration-1000 ease-in-out transform hover:scale-110 active:scale-90 flex flex-col items-center justify-center w-28 h-32"
-                    style="left: ${10 + (idx * 30)}%; top: ${state.gameData.answered ? '10%' : '30%'}; ${styleAnim} ${styleOpacity}"
+                    class="absolute transition-all duration-500 ease-in-out transform hover:scale-110 active:scale-90 flex flex-col items-center justify-center w-28 h-32 z-20"
+                    style="left: ${leftPos}%; top: ${state.gameData.answered ? '15%' : '35%'}; ${styleAnim} ${styleOpacity}"
                 >
                     <div class="w-24 h-28 rounded-[50%] rounded-b-[45%] ${opt.bg} border-b-4 border-black/5 shadow-xl relative flex items-center justify-center text-5xl">
                         ${opt.icon}
@@ -380,6 +475,7 @@
                 <!-- Clouds -->
                 <i data-lucide="cloud" class="absolute top-10 left-10 text-white/60 w-24 h-24"></i>
                 <i data-lucide="cloud" class="absolute top-20 right-20 text-white/40 w-32 h-32"></i>
+                <i data-lucide="cloud" class="absolute top-60 left-1/3 text-white/30 w-16 h-16"></i>
 
                 <!-- Header -->
                 <div class="p-4 flex justify-between items-center z-10">
@@ -394,13 +490,13 @@
                 </div>
 
                 <!-- Prompt -->
-                <div class="text-center mt-4 z-10">
+                <div class="text-center mt-4 z-10 pointer-events-none">
                     <h2 class="text-gray-500 font-bold">Find:</h2>
-                    <div class="text-3xl font-extrabold text-blue-900 drop-shadow-sm">${q.target.word}</div>
+                    <div class="text-4xl font-extrabold text-blue-900 drop-shadow-sm tracking-wide animate-pulse">${q.target.word}</div>
                 </div>
 
                 <!-- Balloons -->
-                <div class="flex-1 relative mt-8">
+                <div class="flex-1 relative mt-4">
                     ${balloonsHtml}
                 </div>
             </div>
@@ -438,18 +534,24 @@
     }
 
     function renderGacha() {
-        // Modal Logic within Gacha
         let modalHtml = '';
         if (state.gachaState === 'open' && state.gachaResult) {
             const r = state.gachaResult;
-            const rarityText = r.rarity === 3 ? "Super Rare!" : r.rarity === 2 ? "Rare!" : "Common";
+            let rarityText = "Common";
+            let rarityColor = "text-gray-400";
+            let bgEffect = "bg-yellow-100 opacity-20";
+            
+            if(r.rarity === 2) { rarityText = "Rare!"; rarityColor = "text-blue-500"; }
+            if(r.rarity === 3) { rarityText = "Super Rare!"; rarityColor = "text-pink-500"; }
+            if(r.rarity === 4) { rarityText = "ULTRA RARE!!"; rarityColor = "text-yellow-600 font-black"; bgEffect = "bg-gradient-to-r from-yellow-200 to-pink-200 opacity-50"; }
+
             modalHtml = `
-                <div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-                    <div class="bg-white w-full max-w-sm rounded-3xl p-8 text-center relative overflow-hidden animate-bounce">
-                         <div class="absolute inset-0 bg-yellow-100 opacity-20 animate-spin-slow" style="z-index:-1"></div>
-                        <div class="text-gray-400 font-bold mb-4 uppercase tracking-widest">${rarityText}</div>
-                        <div class="text-8xl mb-4">${r.icon}</div>
-                        <h3 class="text-3xl font-extrabold text-gray-800 mb-2">${r.word}</h3>
+                <div class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+                    <div class="bg-white w-full max-w-sm rounded-3xl p-8 text-center relative overflow-hidden animate-in fade-in zoom-in duration-300">
+                         <div class="absolute inset-0 ${bgEffect} animate-spin-slow" style="z-index:-1"></div>
+                        <div class="${rarityColor} font-bold mb-4 uppercase tracking-widest text-lg">${rarityText}</div>
+                        <div class="text-8xl mb-6 transform hover:scale-110 transition-transform">${r.icon}</div>
+                        <h3 class="text-4xl font-extrabold text-gray-800 mb-2">${r.word}</h3>
                         <p class="text-gray-500 text-xl mb-8">${r.jp}</p>
                         <button onclick="speak('${r.word}'); closeGacha()" class="w-full bg-pink-500 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95">Close</button>
                     </div>
@@ -463,7 +565,7 @@
 
         app.innerHTML = `
             <div class="min-h-screen bg-pink-50 flex flex-col items-center p-4">
-                <div class="w-full flex justify-between items-center mb-8">
+                <div class="w-full flex justify-between items-center mb-4">
                     <button onclick="state.screen='menu'; render()" class="bg-white p-2 rounded-full shadow text-gray-500">
                         <i data-lucide="x" class="w-6 h-6"></i>
                     </button>
@@ -472,28 +574,30 @@
                     </div>
                 </div>
 
-                <div class="bg-white p-6 rounded-3xl shadow-2xl border-4 border-pink-200 w-full max-w-sm flex flex-col items-center relative">
-                    <div class="w-48 h-48 rounded-full bg-blue-100 border-4 border-black/10 flex items-center justify-center relative overflow-hidden mb-4">
-                         <div class="absolute top-10 left-10 text-2xl animate-pulse">💊</div>
-                         <div class="absolute bottom-10 right-10 text-2xl animate-pulse delay-75">🔮</div>
-                         <div class="absolute top-1/2 left-1/2 text-2xl animate-pulse delay-150">🔴</div>
-                         ${state.gachaState === 'spinning' ? `
-                            <div class="absolute inset-0 bg-white/50 flex items-center justify-center">
-                                <i data-lucide="refresh-cw" class="animate-spin text-blue-500 w-12 h-12"></i>
-                            </div>
-                         ` : ''}
+                <div class="flex-1 flex flex-col justify-center w-full max-w-sm">
+                    <div class="bg-white p-6 rounded-3xl shadow-2xl border-4 border-pink-200 w-full flex flex-col items-center relative">
+                        <div class="w-56 h-56 rounded-full bg-blue-100 border-4 border-black/10 flex items-center justify-center relative overflow-hidden mb-6">
+                            <div class="absolute top-10 left-10 text-3xl animate-pulse">💊</div>
+                            <div class="absolute bottom-10 right-10 text-3xl animate-pulse delay-75">🔮</div>
+                            <div class="absolute top-1/2 left-1/2 text-3xl animate-pulse delay-150">🔴</div>
+                            ${state.gachaState === 'spinning' ? `
+                                <div class="absolute inset-0 bg-white/50 flex items-center justify-center">
+                                    <i data-lucide="refresh-cw" class="animate-spin text-blue-500 w-16 h-16"></i>
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="w-full bg-pink-500 h-28 rounded-2xl flex items-center justify-center relative shadow-inner">
+                            <button 
+                                onclick="spinGacha()"
+                                ${btnDisabled ? 'disabled' : ''}
+                                class="h-20 w-20 rounded-full border-4 border-white shadow-lg flex items-center justify-center transition-all duration-500 ${btnClass} ${btnOpacity}"
+                            >
+                                <i data-lucide="rotate-cw" class="text-white w-10 h-10"></i>
+                            </button>
+                        </div>
+                        <div class="mt-4 text-gray-400 text-sm font-bold">Cost: ${GACHA_COST} coins</div>
                     </div>
-                    
-                    <div class="w-full bg-pink-500 h-24 rounded-2xl flex items-center justify-center relative shadow-inner">
-                        <button 
-                            onclick="spinGacha()"
-                            ${btnDisabled ? 'disabled' : ''}
-                            class="h-16 w-16 rounded-full border-4 border-white shadow-lg flex items-center justify-center transition-all duration-500 ${btnClass} ${btnOpacity}"
-                        >
-                            <i data-lucide="rotate-cw" class="text-white w-8 h-8"></i>
-                        </button>
-                    </div>
-                    <div class="mt-4 text-gray-400 text-sm font-bold">Cost: ${GACHA_COST} coins</div>
                 </div>
                 ${modalHtml}
             </div>
@@ -501,23 +605,31 @@
     }
 
     function renderCollection() {
-        const gridHtml = VOCABULARY.map(item => {
+        // Sort by Rarity (descending) then by ID
+        const sortedVocab = [...VOCABULARY].sort((a,b) => b.rarity - a.rarity);
+
+        const gridHtml = sortedVocab.map(item => {
             const isUnlocked = state.collection.includes(item.id);
             const clickHandler = isUnlocked ? `onclick="speak('${item.word}')"` : '';
-            const bgClass = isUnlocked ? 'bg-white shadow-md cursor-pointer active:scale-95' : 'bg-gray-200 opacity-50';
+            
+            // Style logic based on rarity/unlock
+            let cardBg = isUnlocked ? 'bg-white' : 'bg-gray-200 opacity-50';
+            if(isUnlocked && item.rarity === 4) cardBg = 'bg-yellow-50 border-2 border-yellow-200';
+            
             const icon = isUnlocked ? item.icon : '🔒';
             
             let stars = '';
             if(isUnlocked) {
+                // Gold stars for normal, Rainbowish for Ultra Rare? Just standard gold for clean look
                 stars = `<div class="flex gap-0.5 mt-1">${[...Array(item.rarity)].map(() => '<span class="text-[8px] text-yellow-500">★</span>').join('')}</div>`;
             }
 
             return `
-                <div ${clickHandler} class="aspect-square rounded-2xl flex flex-col items-center justify-center p-2 transition-all ${bgClass}">
-                    <div class="text-3xl mb-1 filter">${icon}</div>
+                <div ${clickHandler} class="aspect-square rounded-2xl flex flex-col items-center justify-center p-1 transition-all shadow-sm ${cardBg} ${isUnlocked ? 'active:scale-95 cursor-pointer' : ''}">
+                    <div class="text-3xl sm:text-4xl mb-1 filter">${icon}</div>
                     ${isUnlocked ? `
-                        <div class="text-xs font-bold text-gray-700 truncate w-full text-center">${item.word}</div>
-                        <div class="text-[10px] text-gray-400 truncate">${item.jp}</div>
+                        <div class="text-[10px] sm:text-xs font-bold text-gray-700 truncate w-full text-center">${item.word}</div>
+                        <div class="text-[8px] sm:text-[10px] text-gray-400 truncate">${item.jp}</div>
                     ` : ''}
                     ${stars}
                 </div>
@@ -525,16 +637,16 @@
         }).join('');
 
         app.innerHTML = `
-            <div class="min-h-screen bg-indigo-50 flex flex-col">
+            <div class="h-screen bg-indigo-50 flex flex-col overflow-hidden">
                 <div class="bg-white p-4 shadow-sm flex justify-between items-center z-10 sticky top-0">
                     <button onclick="state.screen='menu'; render()" class="bg-gray-100 p-2 rounded-full">
                         <i data-lucide="x" class="w-5 h-5"></i>
                     </button>
-                    <h1 class="text-lg font-bold text-gray-700">Collection Book</h1>
+                    <h1 class="text-lg font-bold text-gray-700">Collection</h1>
                     <div class="w-8"></div>
                 </div>
                 
-                <div class="p-4 grid grid-cols-3 sm:grid-cols-4 gap-3 overflow-y-auto pb-20">
+                <div class="flex-1 p-4 grid grid-cols-4 sm:grid-cols-5 gap-2 overflow-y-auto collection-scroll content-start pb-20">
                     ${gridHtml}
                 </div>
             </div>
@@ -546,4 +658,5 @@
 </script>
 </body>
 </html>
+
 
